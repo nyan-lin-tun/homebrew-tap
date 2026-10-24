@@ -6,7 +6,6 @@ class IgniteSwift < Formula
   license "MIT"
 
   depends_on xcode: ["16.0", :build]
-  depends_on :macos
   depends_on macos: :sonoma
   depends_on "python@3.14"
 
