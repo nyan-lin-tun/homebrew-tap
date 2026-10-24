@@ -2,9 +2,17 @@
 
 I put this tap together to make [Ignite](https://github.com/twostraws/Ignite) easier to install with Homebrew. I maintain it independently; it's not an official Ignite tap.
 
-## Install
+## Supported platforms
 
-On macOS, you'll need Sonoma or later and Xcode 16 or later. On Linux (tested on Ubuntu 24.04), you'll need [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) and a [Swift 6 toolchain](https://www.swift.org/install/linux/) for building sites.
+| Platform | Requirements | Status |
+|---|---|---|
+| macOS on Apple Silicon | Sonoma or later, Xcode 16 or later | Tested in CI |
+| Linux (Ubuntu 24.04) | [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux), a [Swift 6 toolchain](https://www.swift.org/install/linux/) for building sites | Tested in CI |
+| macOS on Intel | Sonoma or later, Xcode 16 or later | Not tested |
+
+On every change, CI audits the formula, builds it from source, runs its tests, and creates, builds and previews a sample site on Ubuntu and Apple Silicon. Intel Macs should still work, but they aren't tested: Homebrew now treats them as [Tier 3](https://docs.brew.sh/Support-Tiers) and no longer builds bottles for them, so installs there compile more from source and take longer.
+
+## Install
 
 ```sh
 brew install nyan-lin-tun/tap/ignite-swift
@@ -24,10 +32,9 @@ ignite run --preview
 ## A few things to know
 
 - Homebrew already has an unrelated package called `ignite`. Both use the same command name, so they can't be installed together through Homebrew.
+- On Linux, `ignite run --preview` can't open a browser for you yet, so open the printed URL yourself.
 - If you've installed Ignite manually before, run `which -a ignite` to check whether your terminal is still picking up the old copy.
 - This tap installs Ignite 0.7.1. If `ignite --version` shows 0.6.9, that's the version string in Ignite's source—it doesn't mean Homebrew installed the wrong version.
-
-Installation, site creation, builds, and local previews have been tested on Apple Silicon with macOS 27 and Swift 6.4. Homebrew's tests and audit pass too. CI also builds, tests and previews a sample site on Ubuntu 24.04 and Apple Silicon macOS on every change. Intel Macs aren't tested, since Homebrew now treats them as Tier 3 and no longer builds bottles for them. On Linux, `ignite run --preview` can't open a browser for you yet, so open the printed URL yourself.
 
 ## Problems or suggestions?
 
