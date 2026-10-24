@@ -6,13 +6,20 @@ class IgniteSwift < Formula
   license "MIT"
 
   depends_on xcode: ["16.0", :build]
-  depends_on macos: :sonoma
   depends_on "python@3.14"
+
+  uses_from_macos "swift" => :build
+
+  on_macos do
+    depends_on macos: :sonoma
+  end
 
   conflicts_with "ignite", because: "both install an ignite executable"
 
   def install
-    system "swift", "build", "-c", "release", "--product", "IgniteCLI", "--disable-sandbox"
+    # std_swift_args adds --disable-sandbox on macOS and --static-swift-stdlib on Linux,
+    # so the Linux binary runs without a separate Swift runtime installed.
+    system "swift", "build", "--product", "IgniteCLI", *std_swift_args
     bin.install ".build/release/IgniteCLI" => "ignite"
     # The CLI locates this helper beside its executable.
     (bin/"ignite-server.py").write "#!#{formula_opt_bin("python@3.14")}/python3.14\n" + File.read("server.py")
@@ -21,8 +28,9 @@ class IgniteSwift < Formula
 
   def caveats
     <<~EOS
-      Building Ignite sites requires Swift 6 or newer, provided by Xcode or
-      the Xcode Command Line Tools. Creating sites also requires Git.
+      Building Ignite sites requires Swift 6 or newer and Git.
+      On macOS, Swift comes with Xcode or the Xcode Command Line Tools.
+      On Linux, install a Swift 6 toolchain from https://www.swift.org/install/linux/
     EOS
   end
 

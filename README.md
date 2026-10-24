@@ -4,7 +4,7 @@ I put this tap together to make [Ignite](https://github.com/twostraws/Ignite) ea
 
 ## Install
 
-You'll need macOS Sonoma or later and Xcode 16 or later.
+On macOS, you'll need Sonoma or later and Xcode 16 or later. On Linux (tested on Ubuntu 24.04), you'll need [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux) and a [Swift 6 toolchain](https://www.swift.org/install/linux/) for building sites.
 
 ```sh
 brew install nyan-lin-tun/tap/ignite-swift
@@ -27,7 +27,7 @@ ignite run --preview
 - If you've installed Ignite manually before, run `which -a ignite` to check whether your terminal is still picking up the old copy.
 - This tap installs Ignite 0.7.1. If `ignite --version` shows 0.6.9, that's the version string in Ignite's source—it doesn't mean Homebrew installed the wrong version.
 
-Installation, site creation, builds, and local previews have been tested on Apple Silicon with macOS 27 and Swift 6.4. Homebrew's tests and audit pass too. Intel Macs and older supported macOS/Xcode versions haven't been tested yet.
+Installation, site creation, builds, and local previews have been tested on Apple Silicon with macOS 27 and Swift 6.4. Homebrew's tests and audit pass too. CI also builds, tests and previews a sample site on Ubuntu 24.04, Apple Silicon and Intel macOS on every change. On Linux, `ignite run --preview` can't open a browser for you yet, so open the printed URL yourself.
 
 ## Problems or suggestions?
 
