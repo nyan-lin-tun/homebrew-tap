@@ -84,11 +84,21 @@ jobs:
       - name: Create and build a site
         run: |
           if [ -n "${SITE_PATH:-}" ]; then export PATH="$SITE_PATH"; fi
+          log="$RUNNER_TEMP/site.log"
+          # On failure, show the output and attach its tail to the error annotation.
+          fail() {
+            cat "$log"
+            tail -n 40 "$log" | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}' > "$log.tail"
+            echo "::error title=$1::$(cat "$log.tail")"
+            exit 1
+          }
           cd "$RUNNER_TEMP"
-          ignite new CISite
+          ignite new CISite > "$log" 2>&1 || fail "ignite new failed"
+          cat "$log"
           cd CISite
-          ignite build
-          test -f Build/index.html
+          ignite build > "$log" 2>&1 || fail "ignite build failed"
+          cat "$log"
+          test -f Build/index.html || fail "ignite build produced no Build/index.html"
 
       - name: Preview the site
         run: |
