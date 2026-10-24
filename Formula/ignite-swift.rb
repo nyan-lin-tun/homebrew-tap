@@ -10,7 +10,7 @@ class IgniteSwift < Formula
   # Needed at build time and at run time, since `ignite build` compiles the
   # user's site with Swift. macOS provides it through the Command Line Tools
   # or Xcode; on Linux, Homebrew installs its own `swift`.
-  uses_from_macos "swift"
+  uses_from_macos "swift", since: :sonoma
 
   on_macos do
     depends_on macos: :sonoma
