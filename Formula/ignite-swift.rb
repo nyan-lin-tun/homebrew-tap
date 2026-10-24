@@ -16,6 +16,13 @@ class IgniteSwift < Formula
     depends_on macos: :sonoma
   end
 
+  on_sequoia do
+    # Workaround for https://github.com/apple/swift-argument-parser/issues/827
+    # Conditional should really be Swift >= 6.2 but not available so using
+    # a check on the specific ld version included with Xcode >= 26
+    depends_on xcode: :build if DevelopmentTools.ld64_version >= "1221.4"
+  end
+
   conflicts_with "ignite", because: "both install an ignite executable"
 
   deny_network_access!
