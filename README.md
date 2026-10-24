@@ -2,7 +2,7 @@
 
 Community-maintained packaging by nyan-lin-tun for [Ignite](https://github.com/twostraws/Ignite). This is not an official twostraws tap.
 
-## Install (after this tap is published)
+## Install
 
 ```sh
 brew install nyan-lin-tun/tap/ignite-swift
@@ -26,3 +26,7 @@ For each update, inspect the upstream tag, download its source archive, calculat
 The source archive is checksum-verified, but upstream does not include Package.resolved, so Swift dependencies are resolved during installation. This is not a fully reproducible build.
 
 Report packaging issues to this repository; report Ignite behavior to upstream with a reproduction. No upstream release workflow changes or repository secrets are required.
+
+## Validation
+
+Source installation, Homebrew tests and strict audit, starter-site creation, HTML generation, and HTTP preview serving passed on Apple Silicon with macOS 27 and Swift 6.4. Intel and the minimum supported macOS/Xcode versions have not yet been tested.
