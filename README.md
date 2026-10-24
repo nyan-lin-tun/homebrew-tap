@@ -6,9 +6,9 @@ I put this tap together to make [Ignite](https://github.com/twostraws/Ignite) ea
 
 | Platform | Requirements | Status |
 |---|---|---|
-| macOS on Apple Silicon | Sonoma or later, Xcode 16 or later | Tested in CI |
-| Linux (Ubuntu 24.04) | [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux), a [Swift 6 toolchain](https://www.swift.org/install/linux/) for building sites | Tested in CI |
-| macOS on Intel | Sonoma or later, Xcode 16 or later | Not tested |
+| macOS on Apple Silicon | Sonoma or later, plus the Xcode Command Line Tools (`xcode-select --install`) or Xcode 16+ | Tested in CI, with and without Xcode |
+| Linux (Ubuntu 24.04) | [Homebrew on Linux](https://docs.brew.sh/Homebrew-on-Linux). Homebrew installs Swift for you | Tested in CI |
+| macOS on Intel | Sonoma or later, plus the Command Line Tools or Xcode 16+ | Not tested |
 
 On every change, CI audits the formula, builds it from source, runs its tests, and creates, builds and previews a sample site on Ubuntu and Apple Silicon. Intel Macs should still work, but they aren't tested: Homebrew now treats them as [Tier 3](https://docs.brew.sh/Support-Tiers) and no longer builds bottles for them, so installs there compile more from source and take longer.
 
@@ -18,7 +18,7 @@ On every change, CI audits the formula, builds it from source, runs its tests, a
 brew install nyan-lin-tun/tap/ignite-swift
 ```
 
-Homebrew builds the command-line tool from source, so installation can take a little while. It also installs Python for the local preview server. You'll still need Swift 6+ and Git to create and build sites.
+Homebrew builds the command-line tool from source, so installation can take a little while. It also installs Python for the local preview server. Ignite uses Swift 6 and Git to create and build sites: on macOS they come with the Command Line Tools, and on Linux Homebrew installs Swift alongside Ignite. You don't need a separate Swift toolchain.
 
 The package is called `ignite-swift`, but you'll use `ignite` in your terminal:
 
