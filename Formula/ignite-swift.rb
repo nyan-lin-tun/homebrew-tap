@@ -43,15 +43,6 @@ class IgniteSwift < Formula
     chmod 0755, bin/"ignite-server.py"
   end
 
-  def caveats
-    <<~EOS
-      Building Ignite sites requires Swift 6 or newer and Git.
-      On macOS, both come with the Xcode Command Line Tools (or Xcode 16+):
-        xcode-select --install
-      On Linux, Homebrew has already installed Swift for you.
-    EOS
-  end
-
   test do
     assert_match "USAGE: ignite", shell_output("#{bin}/ignite --help")
     assert_match "Can't find Package.swift", shell_output("#{bin}/ignite build")
