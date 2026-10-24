@@ -22,6 +22,9 @@ jobs:
           # Apple Silicon with Xcode.
           - name: macos-latest (Xcode)
             os: macos-latest
+          # macOS 15 Sequoia, the oldest macOS Homebrew builds bottles for.
+          - name: macos-15
+            os: macos-15
           # Apple Silicon with only the Command Line Tools: Xcode is moved away.
           - name: macos-latest (Command Line Tools only)
             os: macos-latest
