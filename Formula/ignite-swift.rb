@@ -14,7 +14,9 @@ class IgniteSwift < Formula
   def install
     system "swift", "build", "-c", "release", "--product", "IgniteCLI", "--disable-sandbox"
     bin.install ".build/release/IgniteCLI" => "ignite"
-    bin.install "server.py" => "ignite-server.py"
+    # The CLI locates this helper beside its executable.
+    (bin/"ignite-server.py").write "#!#{formula_opt_bin("python@3.14")}/python3.14\n" + File.read("server.py")
+    chmod 0755, bin/"ignite-server.py"
   end
 
   def caveats
@@ -27,6 +29,6 @@ class IgniteSwift < Formula
   test do
     assert_match "USAGE: ignite", shell_output("#{bin}/ignite --help")
     assert_match "Can't find Package.swift", shell_output("#{bin}/ignite build")
-    assert_match "--directory", shell_output("#{Formula["python@3.14"].opt_bin}/python3.14 #{bin}/ignite-server.py --help")
+    assert_match "--directory", shell_output("#{bin}/ignite-server.py --help")
   end
 end
