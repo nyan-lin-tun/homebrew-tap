@@ -18,6 +18,14 @@ class IgniteSwift < Formula
 
   conflicts_with "ignite", because: "both install an ignite executable"
 
+  deny_network_access!
+
+  def fetch
+    # Download Swift package dependencies while network access is allowed.
+    # SwiftPM's own sandbox cannot nest inside Homebrew's build sandbox.
+    system "swift", "package", "resolve", "--disable-sandbox"
+  end
+
   def install
     # std_swift_args adds --disable-sandbox on macOS and --static-swift-stdlib on Linux,
     # so the Linux binary runs without a separate Swift runtime installed.
