@@ -11,18 +11,39 @@ permissions:
 
 jobs:
   test:
-    name: ${{ matrix.os }}
+    name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix:
-        os:
-          - ubuntu-24.04    # Linux x86_64
-          - macos-latest    # Apple Silicon
+        include:
+          # Linux x86_64, using only the Swift that Homebrew installs.
+          - name: ubuntu-24.04
+            os: ubuntu-24.04
+          # Apple Silicon with Xcode.
+          - name: macos-latest (Xcode)
+            os: macos-latest
+          # Apple Silicon with only the Command Line Tools: Xcode is moved away.
+          - name: macos-latest (Command Line Tools only)
+            os: macos-latest
+            clt_only: true
           # No Intel Mac: Homebrew treats Intel macOS as Tier 3 and no longer
           # builds bottles for it, so dependencies compile from source there.
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Remove Xcode, leaving only the Command Line Tools
+        if: matrix.clt_only
+        run: |
+          test -x /Library/Developer/CommandLineTools/usr/bin/swift
+          sudo xcode-select --switch /Library/Developer/CommandLineTools
+          sudo mkdir -p /opt/hidden-xcode
+          for app in /Applications/Xcode*.app; do
+            sudo mv "$app" /opt/hidden-xcode/
+          done
+          ls /Applications | grep -i xcode && exit 1 || true
+          xcode-select --print-path
+          swift --version
+
       # Checks out this repository and registers it as the nyan-lin-tun/tap tap.
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@main
@@ -43,22 +64,45 @@ jobs:
         run: brew linkage --test nyan-lin-tun/tap/ignite-swift
 
       # End-to-end: create, build and preview a real site with the installed CLI.
+      # On Linux, PATH is limited to Homebrew and the base system, so the runner's
+      # preinstalled Swift can't be used: Homebrew's Swift has to be enough.
+      - name: Limit Linux PATH to Homebrew and the base system
+        if: runner.os == 'Linux'
+        run: echo "SITE_PATH=$(brew --prefix)/bin:/usr/bin:/bin" >> "$GITHUB_ENV"
+
       - name: Show toolchain
         run: |
+          if [ -n "${SITE_PATH:-}" ]; then export PATH="$SITE_PATH"; fi
           which -a ignite
+          which -a swift
           swift --version
           git --version
+          if [ "$RUNNER_OS" = Linux ]; then
+            test "$(command -v swift)" = "$(brew --prefix)/bin/swift"
+          fi
 
       - name: Create and build a site
         run: |
+          if [ -n "${SITE_PATH:-}" ]; then export PATH="$SITE_PATH"; fi
+          log="$RUNNER_TEMP/site.log"
+          # On failure, show the output and attach its tail to the error annotation.
+          fail() {
+            cat "$log"
+            tail -n 40 "$log" | sed -e 's/%/%25/g' | awk '{printf "%s%%0A", $0}' > "$log.tail"
+            echo "::error title=$1::$(cat "$log.tail")"
+            exit 1
+          }
           cd "$RUNNER_TEMP"
-          ignite new CISite
+          ignite new CISite > "$log" 2>&1 || fail "ignite new failed"
+          cat "$log"
           cd CISite
-          ignite build
-          test -f Build/index.html
+          ignite build > "$log" 2>&1 || fail "ignite build failed"
+          cat "$log"
+          test -f Build/index.html || fail "ignite build produced no Build/index.html"
 
       - name: Preview the site
         run: |
+          if [ -n "${SITE_PATH:-}" ]; then export PATH="$SITE_PATH"; fi
           cd "$RUNNER_TEMP/CISite"
           # `ignite run` waits for Return, so feed it a delayed newline.
           (sleep 45; echo) | ignite run --port 8123 > "$RUNNER_TEMP/run.log" 2>&1 &

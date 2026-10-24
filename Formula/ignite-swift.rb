@@ -5,10 +5,12 @@ class IgniteSwift < Formula
   sha256 "9d2b87d49a5c304530058a4866372048df556264851a39d84644efb3cf95e332"
   license "MIT"
 
-  depends_on xcode: ["16.0", :build]
   depends_on "python@3.14"
 
-  uses_from_macos "swift" => :build
+  # Needed at build time and at run time, since `ignite build` compiles the
+  # user's site with Swift. macOS provides it through the Command Line Tools
+  # or Xcode; on Linux, Homebrew installs its own `swift`.
+  uses_from_macos "swift"
 
   on_macos do
     depends_on macos: :sonoma
@@ -29,8 +31,9 @@ class IgniteSwift < Formula
   def caveats
     <<~EOS
       Building Ignite sites requires Swift 6 or newer and Git.
-      On macOS, Swift comes with Xcode or the Xcode Command Line Tools.
-      On Linux, install a Swift 6 toolchain from https://www.swift.org/install/linux/
+      On macOS, both come with the Xcode Command Line Tools (or Xcode 16+):
+        xcode-select --install
+      On Linux, Homebrew has already installed Swift for you.
     EOS
   end
 
