@@ -18,7 +18,8 @@ jobs:
         os:
           - ubuntu-24.04    # Linux x86_64
           - macos-latest    # Apple Silicon
-          - macos-15-intel  # Intel Mac
+          # No Intel Mac: Homebrew treats Intel macOS as Tier 3 and no longer
+          # builds bottles for it, so dependencies compile from source there.
     runs-on: ${{ matrix.os }}
 
     steps:

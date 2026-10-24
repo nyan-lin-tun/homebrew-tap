@@ -27,7 +27,7 @@ ignite run --preview
 - If you've installed Ignite manually before, run `which -a ignite` to check whether your terminal is still picking up the old copy.
 - This tap installs Ignite 0.7.1. If `ignite --version` shows 0.6.9, that's the version string in Ignite's source—it doesn't mean Homebrew installed the wrong version.
 
-Installation, site creation, builds, and local previews have been tested on Apple Silicon with macOS 27 and Swift 6.4. Homebrew's tests and audit pass too. CI also builds, tests and previews a sample site on Ubuntu 24.04, Apple Silicon and Intel macOS on every change. On Linux, `ignite run --preview` can't open a browser for you yet, so open the printed URL yourself.
+Installation, site creation, builds, and local previews have been tested on Apple Silicon with macOS 27 and Swift 6.4. Homebrew's tests and audit pass too. CI also builds, tests and previews a sample site on Ubuntu 24.04 and Apple Silicon macOS on every change. Intel Macs aren't tested, since Homebrew now treats them as Tier 3 and no longer builds bottles for them. On Linux, `ignite run --preview` can't open a browser for you yet, so open the printed URL yourself.
 
 ## Problems or suggestions?
 
