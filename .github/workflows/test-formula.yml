@@ -1,0 +1,74 @@
+name: Test formula
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-24.04    # Linux x86_64
+          - macos-latest    # Apple Silicon
+          # No Intel Mac: Homebrew treats Intel macOS as Tier 3 and no longer
+          # builds bottles for it, so dependencies compile from source there.
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Checks out this repository and registers it as the nyan-lin-tun/tap tap.
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@main
+
+      - name: Check formula style
+        run: brew style nyan-lin-tun/tap/ignite-swift
+
+      - name: Audit formula as a new homebrew-core submission
+        run: brew audit --new --strict --online --formula nyan-lin-tun/tap/ignite-swift
+
+      - name: Build from source
+        run: brew install --build-from-source --verbose nyan-lin-tun/tap/ignite-swift
+
+      - name: Run formula tests
+        run: brew test --verbose nyan-lin-tun/tap/ignite-swift
+
+      - name: Linkage check
+        run: brew linkage --test nyan-lin-tun/tap/ignite-swift
+
+      # End-to-end: create, build and preview a real site with the installed CLI.
+      - name: Show toolchain
+        run: |
+          which -a ignite
+          swift --version
+          git --version
+
+      - name: Create and build a site
+        run: |
+          cd "$RUNNER_TEMP"
+          ignite new CISite
+          cd CISite
+          ignite build
+          test -f Build/index.html
+
+      - name: Preview the site
+        run: |
+          cd "$RUNNER_TEMP/CISite"
+          # `ignite run` waits for Return, so feed it a delayed newline.
+          (sleep 45; echo) | ignite run --port 8123 > "$RUNNER_TEMP/run.log" 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://localhost:8123/ > /dev/null; then
+              echo "Preview server is up"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Preview server did not start. Output:"
+          cat "$RUNNER_TEMP/run.log"
+          exit 1
