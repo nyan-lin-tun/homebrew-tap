@@ -23,8 +23,6 @@ class IgniteSwift < Formula
     depends_on xcode: :build if DevelopmentTools.ld64_version >= "1221.4"
   end
 
-  conflicts_with "ignite", because: "both install an ignite executable"
-
   deny_network_access!
 
   def fetch
