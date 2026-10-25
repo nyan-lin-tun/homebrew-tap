@@ -28,8 +28,6 @@ class IgniteSwift < Formula
   deny_network_access!
 
   def fetch
-    # Download Swift package dependencies while network access is allowed.
-    # SwiftPM's own sandbox cannot nest inside Homebrew's build sandbox.
     system "swift", "package", "resolve", "--disable-sandbox"
   end
 
