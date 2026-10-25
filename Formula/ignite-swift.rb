@@ -5,11 +5,10 @@ class IgniteSwift < Formula
   sha256 "9d2b87d49a5c304530058a4866372048df556264851a39d84644efb3cf95e332"
   license "MIT"
 
-  depends_on "python@3.14"
-
   # Needed at build time and at run time, since `ignite build` compiles the
   # user's site with Swift. macOS provides it through the Command Line Tools
   # or Xcode; on Linux, Homebrew installs its own `swift`.
+  uses_from_macos "python"
   uses_from_macos "swift", since: :sonoma
 
   on_macos do
@@ -39,7 +38,7 @@ class IgniteSwift < Formula
     system "swift", "build", "--product", "IgniteCLI", *std_swift_args
     bin.install ".build/release/IgniteCLI" => "ignite"
     # The CLI locates this helper beside its executable.
-    (bin/"ignite-server.py").write "#!#{formula_opt_bin("python@3.14")}/python3.14\n" + File.read("server.py")
+    (bin/"ignite-server.py").write "#!/usr/bin/env python3\n" + File.read("server.py")
     chmod 0755, bin/"ignite-server.py"
   end
 
