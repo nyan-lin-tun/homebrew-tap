@@ -25,6 +25,11 @@ jobs:
           # macOS 15 Sequoia, the oldest macOS Homebrew builds bottles for.
           - name: macos-15
             os: macos-15
+          # macOS 15 with Xcode 26 selected: a Swift 6.2+ compiler with the
+          # macOS 15 SDK, like Homebrew's own Sequoia CI machines.
+          - name: macos-15 (Xcode 26)
+            os: macos-15
+            xcode26: true
           # Apple Silicon with only the Command Line Tools: Xcode is moved away.
           - name: macos-latest (Command Line Tools only)
             os: macos-latest
@@ -34,6 +39,20 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Select Xcode 26 on macOS 15
+        if: matrix.xcode26
+        run: |
+          ls -d /Applications/Xcode*.app
+          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n 1)
+          if [ -z "$xcode" ]; then
+            echo "::error::No Xcode 26 on this runner image"
+            exit 1
+          fi
+          sudo xcode-select --switch "$xcode"
+          xcode-select --print-path
+          swift --version
+          ls /Library/Developer/CommandLineTools/SDKs || true
+
       - name: Remove Xcode, leaving only the Command Line Tools
         if: matrix.clt_only
         run: |
